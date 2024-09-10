@@ -908,6 +908,8 @@ def get_datamodule(args, for_generation=False, dataset_override=None):
         FlanModule,
         FlatMultiTaskConfig,
         FlatMultiTaskModule,
+        MaryamsModule,
+        MarymsDatasetConfig,
     )
     from mttl.datamodule.openbookqa_data_module import (
         OpenbookQADataConfig,
@@ -1005,6 +1007,9 @@ def get_datamodule(args, for_generation=False, dataset_override=None):
             pack_sequences=args.pack_sequences,
         )
         dm = FlanModule(config, for_generation=for_generation)
+    elif "fka" in dataset:
+        config = MarymsDatasetConfig(**common_kwargs)
+        dm = MaryamsModule(config, for_generation=for_generation)
     elif "flat" in dataset:
         config = FlatMultiTaskConfig(
             **common_kwargs,

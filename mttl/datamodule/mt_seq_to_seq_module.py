@@ -205,6 +205,10 @@ class FlanConfig(DatasetConfig):
     source_template: str = None
     remove_phi_eval_tasks: bool = False
 
+@dataclass
+class MarymsDatasetConfig(DatasetConfig):
+    pass
+
 
 def filter_template_type(include_template_type, example):
     return example["template_type"] in include_template_type
@@ -213,6 +217,14 @@ def filter_template_type(include_template_type, example):
 def filter_task_source(include_task_source, example):
     return example["task_source"] in include_task_source
 
+@DataModule.register("maryams_module", config_cls=MarymsDatasetConfig)
+class MaryamsModule(DataModule):
+    def setup_dataset(self):
+        train_dataset = DatasetLibrary.pull_dataset_with_retry(self.config.dataset)
+        self.train_dataset, self.dev_dataset = self.create_train_valid_split(
+                train_dataset
+            )
+        self.test_dataset = self.dev_dataset
 
 @DataModule.register("flan", config_cls=FlanConfig)
 class FlanModule(DataModule):
